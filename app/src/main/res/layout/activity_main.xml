@@ -17,12 +17,12 @@
 
     <me.leefeng.libverify.VerificationView
         android:layout_width="0dp"
-        android:layout_height="80dp"
+        android:layout_height="50dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:vTextSize="28dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="18dp"
+        app:vTextCount="6"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="18dp"
         android:layout_marginTop="8dp"
         app:layout_constraintTop_toTopOf="parent"/>
 

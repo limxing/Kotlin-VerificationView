@@ -23,7 +23,7 @@ import android.widget.TextView
  *
  * Created by lilifeng on 2019/4/8
  *
- *
+ * 自定义View - 手机验证码输入框
  *
  */
 class VerificationView @JvmOverloads constructor(
@@ -67,8 +67,6 @@ class VerificationView @JvmOverloads constructor(
     }
 
     private val pant = Paint()
-    //    val w = context.dimen(if (isPad) R.dimen.pt_100 else R.dimen.pt_70)
-//    val middlw = context.dimen(if (isPad) R.dimen.pt_20 else R.dimen.pt_16)
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         pant.isAntiAlias = true
@@ -110,7 +108,7 @@ class VerificationView @JvmOverloads constructor(
         super.onAttachedToWindow()
         postDelayed({
             focus()
-        },200)
+        }, 200)
 
     }
 
@@ -149,14 +147,19 @@ class VerificationView @JvmOverloads constructor(
         for (i in 0 until etTextCount) {
             val et = EditText(context)
             et.textAlignment = TextView.TEXT_ALIGNMENT_CENTER
-            et.gravity = Gravity.CENTER
-//            et.background = ColorDrawable(Color.RED)
+            et.gravity = Gravity.CENTER_VERTICAL
+            et.background = ColorDrawable(Color.RED)
             et.includeFontPadding = false
-//            et.setBackgroundResource(R.drawable.bac_square)
+            et.setBackgroundResource(R.drawable.bac_square)
             et.setEms(1)
+            try {
+                val f = TextView::class.java.getDeclaredField("mCursorDrawableRes")
+                f.isAccessible = true
+                f.set(et, R.drawable.cursor_color)
+            } catch (e: Throwable) {
+            }
             et.inputType = InputType.TYPE_CLASS_NUMBER
             et.setTextColor(Color.parseColor("#464646"))
-            et.setTextSize(TypedValue.COMPLEX_UNIT_PX, etTextSize)
             et.tag = i
             et.addTextChangedListener(this)
             et.setOnKeyListener(this)
@@ -184,9 +187,10 @@ class VerificationView @JvmOverloads constructor(
             var left = 0f
             val middle = (sizeW - sizeH * etTextCount) / (etTextCount - 1)
             for (i in 0 until etTextCount) {
-                val et = getChildAt(i)
+                val et = getChildAt(i) as EditText
                 et.layout(left.toInt(), 0, (left + sizeH).toInt(), sizeH)
-//                et.setPadding(0, (sizeH * 0.3).toInt(),0,0)
+                et.setPadding(0, (sizeH * 0.3).toInt(), 0, 0)
+                et.setTextSize(TypedValue.COMPLEX_UNIT_PX, sizeH / 8 * 3f)
                 left += sizeH + middle
             }
         }
