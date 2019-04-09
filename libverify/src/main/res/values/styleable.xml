@@ -5,5 +5,6 @@
         <attr name="vTextCount" format="integer"/>
         <attr name="vTextColor" format="color"/>
         <attr name="vBackgroundResource" format="reference"/>
+        <attr name="vBackgroundColor" format="color"/>
     </declare-styleable>
 </resources>

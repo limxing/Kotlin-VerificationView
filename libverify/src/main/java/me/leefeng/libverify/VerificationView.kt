@@ -65,13 +65,17 @@ class VerificationView @JvmOverloads constructor(
     private val density = resources.displayMetrics.density
     private var etTextSize = 18 * density
     private var etTextCount = 4
-    private var vBackGround = 0
+    private var etBackGround = 0
+    private var etBackGroundColor = Color.BLACK
+    private var etTextColor = Color.BLACK
 
     init {
         val array = context.obtainStyledAttributes(attrs, R.styleable.VerificationView)
         etTextSize = array.getDimension(R.styleable.VerificationView_vTextSize, 18 * density)
         etTextCount = array.getInteger(R.styleable.VerificationView_vTextCount, 4)
-        vBackGround = array.getResourceId(R.styleable.VerificationView_vBackGround, 0)
+        etBackGround = array.getResourceId(R.styleable.VerificationView_vBackgroundResource, 0)
+        etBackGroundColor = array.getColor(R.styleable.VerificationView_vBackgroundColor, Color.BLACK)
+        etTextColor = array.getColor(R.styleable.VerificationView_vTextColor, Color.BLACK)
         array.recycle()
 
     }
@@ -163,11 +167,11 @@ class VerificationView @JvmOverloads constructor(
             val et = EditText(context)
             et.gravity = Gravity.CENTER
             et.includeFontPadding = false
-            et.maxWidth = (100 * density).toInt()
-            et.background = ColorDrawable(Color.TRANSPARENT)
+            if (etBackGroundColor != Color.BLACK)
+                et.background = ColorDrawable(etBackGroundColor)
             et.includeFontPadding = false
-            if (vBackGround != 0)
-                et.setBackgroundResource(R.drawable.bac_square)
+            if (etBackGround != 0)
+                et.setBackgroundResource(etBackGround)
             et.setEms(1)
             try {
                 val f = TextView::class.java.getDeclaredField("mCursorDrawableRes")
@@ -176,7 +180,7 @@ class VerificationView @JvmOverloads constructor(
             } catch (e: Throwable) {
             }
             et.inputType = InputType.TYPE_CLASS_NUMBER
-            et.setTextColor(Color.parseColor("#464646"))
+            et.setTextColor(etTextColor)
             et.setTextSize(TypedValue.COMPLEX_UNIT_PX, etTextSize)
             et.addTextChangedListener(this)
             et.setOnKeyListener(this)
