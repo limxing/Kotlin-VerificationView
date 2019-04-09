@@ -1,5 +1,6 @@
 # Kotlin-VerificationView
-VerificationView-手机验证码输入框
+VerificationView-手机验证码输入框 [![](https://jitpack.io/v/limxing/Kotlin-VerificationView.svg)](https://jitpack.io/#limxing/Kotlin-VerificationView)
+
 
 <img src="./c99706f26b3a3b42367d8832a4dce716.GIF" width="320" height="255"/>
 
@@ -21,7 +22,7 @@ allprojects {
 App level build.gradle
 ```
 dependencies {
-    implementation ''
+    implementation 'com.github.limxing:Kotlin-VerificationView:1.0'
 }
 ```
 
