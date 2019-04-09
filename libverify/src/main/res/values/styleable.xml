@@ -3,5 +3,7 @@
     <declare-styleable name="VerificationView">
         <attr name="vTextSize" format="dimension"/>
         <attr name="vTextCount" format="integer"/>
+        <attr name="vTextColor" format="color"/>
+        <attr name="vBackgroundResource" format="reference"/>
     </declare-styleable>
 </resources>

@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.text.Editable
 import android.text.InputFilter
@@ -49,7 +50,14 @@ class VerificationView @JvmOverloads constructor(
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
     }
 
+
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+        val middle = (sizeW - sizeH * etTextCount) / (etTextCount - 1)
+        for (i in 0 until etTextCount) {
+            val et = getChildAt(i) as EditText
+            val left = (middle + sizeH) * i
+            et.layout(left, 0, left + sizeH, sizeH)
+        }
         getChildAt(etTextCount).layout(l, t, r, b)
 
     }
@@ -57,11 +65,13 @@ class VerificationView @JvmOverloads constructor(
     private val density = resources.displayMetrics.density
     private var etTextSize = 18 * density
     private var etTextCount = 4
+    private var vBackGround = 0
 
     init {
         val array = context.obtainStyledAttributes(attrs, R.styleable.VerificationView)
         etTextSize = array.getDimension(R.styleable.VerificationView_vTextSize, 18 * density)
         etTextCount = array.getInteger(R.styleable.VerificationView_vTextCount, 4)
+        vBackGround = array.getResourceId(R.styleable.VerificationView_vBackGround, 0)
         array.recycle()
 
     }
@@ -141,16 +151,23 @@ class VerificationView @JvmOverloads constructor(
      * 最后一个完成回调
      */
     var finish: ((String) -> Unit)? = null
+    private val paint = Paint()
+    private val textRect = Rect()
 
     init {
+        paint.isAntiAlias = true
+        paint.textSize = etTextSize
+        paint.getTextBounds("8", 0, 1, textRect)
         setWillNotDraw(false)
         for (i in 0 until etTextCount) {
             val et = EditText(context)
-            et.textAlignment = TextView.TEXT_ALIGNMENT_CENTER
-            et.gravity = Gravity.CENTER_VERTICAL
-            et.background = ColorDrawable(Color.RED)
+            et.gravity = Gravity.CENTER
             et.includeFontPadding = false
-            et.setBackgroundResource(R.drawable.bac_square)
+            et.maxWidth = (100 * density).toInt()
+            et.background = ColorDrawable(Color.TRANSPARENT)
+            et.includeFontPadding = false
+            if (vBackGround != 0)
+                et.setBackgroundResource(R.drawable.bac_square)
             et.setEms(1)
             try {
                 val f = TextView::class.java.getDeclaredField("mCursorDrawableRes")
@@ -160,7 +177,7 @@ class VerificationView @JvmOverloads constructor(
             }
             et.inputType = InputType.TYPE_CLASS_NUMBER
             et.setTextColor(Color.parseColor("#464646"))
-            et.tag = i
+            et.setTextSize(TypedValue.COMPLEX_UNIT_PX, etTextSize)
             et.addTextChangedListener(this)
             et.setOnKeyListener(this)
             et.filters = arrayOf<InputFilter>(InputFilter.LengthFilter(1))
@@ -180,20 +197,13 @@ class VerificationView @JvmOverloads constructor(
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         sizeW = View.MeasureSpec.getSize(widthMeasureSpec)
         sizeH = View.MeasureSpec.getSize(heightMeasureSpec)
-
-
-        if (etTextCount > 0) {
-            measureChildren(widthMeasureSpec, heightMeasureSpec)
-            var left = 0f
-            val middle = (sizeW - sizeH * etTextCount) / (etTextCount - 1)
-            for (i in 0 until etTextCount) {
-                val et = getChildAt(i) as EditText
-                et.layout(left.toInt(), 0, (left + sizeH).toInt(), sizeH)
-                et.setPadding(0, (sizeH * 0.3).toInt(), 0, 0)
-                et.setTextSize(TypedValue.COMPLEX_UNIT_PX, sizeH / 8 * 3f)
-                left += sizeH + middle
-            }
+        for (i in 0 until etTextCount) {
+            val lp = getChildAt(0).layoutParams
+            lp.width = sizeH
+            lp.height = sizeH
+            getChildAt(i).layoutParams = lp
         }
+        measureChildren(widthMeasureSpec, heightMeasureSpec)
     }
 
     fun clear() {
