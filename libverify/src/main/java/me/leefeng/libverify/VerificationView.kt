@@ -1,9 +1,7 @@
 package me.leefeng.libverify
 
 import android.content.Context
-import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.text.Editable
@@ -31,8 +29,15 @@ class VerificationView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : ViewGroup(context, attrs, defStyleAttr), TextWatcher, View.OnKeyListener {
     override fun onKey(v: View?, keyCode: Int, event: KeyEvent?): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_DEL) {
-            backFocus()
+        if (keyCode == KeyEvent.KEYCODE_DEL && event?.action == KeyEvent.ACTION_UP) {
+            if (v?.tag == (etTextCount - 1)) {
+                if (lastEtisEmpty) {
+                    backFocus()
+                }
+                lastEtisEmpty = true
+            } else {
+                backFocus()
+            }
         }
         return false
     }
@@ -44,7 +49,10 @@ class VerificationView @JvmOverloads constructor(
 
     }
 
+    private var lastEtisEmpty = true
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+        val lastETC = getChildAt(etTextCount - 1) as EditText
+        lastEtisEmpty = lastETC.text.isEmpty()
     }
 
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -58,7 +66,7 @@ class VerificationView @JvmOverloads constructor(
             val left = (middle + sizeH) * i
             et.layout(left, 0, left + sizeH, sizeH)
         }
-        getChildAt(etTextCount).layout(l, t, r, b)
+        getChildAt(etTextCount).layout(0, 0, sizeW, sizeH)
 
     }
 
@@ -68,6 +76,7 @@ class VerificationView @JvmOverloads constructor(
     private var etBackGround = 0
     private var etBackGroundColor = Color.BLACK
     private var etTextColor = Color.BLACK
+    private var etCursorDrawable = 0
 
     init {
         val array = context.obtainStyledAttributes(attrs, R.styleable.VerificationView)
@@ -76,33 +85,18 @@ class VerificationView @JvmOverloads constructor(
         etBackGround = array.getResourceId(R.styleable.VerificationView_vBackgroundResource, 0)
         etBackGroundColor = array.getColor(R.styleable.VerificationView_vBackgroundColor, Color.BLACK)
         etTextColor = array.getColor(R.styleable.VerificationView_vTextColor, Color.BLACK)
+        etCursorDrawable = array.getResourceId(R.styleable.VerificationView_vCursorDrawable, 0)
         array.recycle()
 
     }
 
-    private val pant = Paint()
-    override fun onDraw(canvas: Canvas?) {
-        super.onDraw(canvas)
-        pant.isAntiAlias = true
-        pant.color = Color.parseColor("#DCDCDC")
-        pant.strokeWidth = density * 1
-        var left = 0f
-        val top = sizeH - pant.strokeWidth
-//        for (i in 0 until etTextCount) {
-//            canvas?.drawLine(left, top, left + w, top, pant)
-//            left += w + middlw
-//        }
-
-    }
-
     private fun backFocus() {
-
-        var editText: EditText
         for (i in etTextCount - 1 downTo 0) {
-            editText = getChildAt(i) as EditText
+            val editText = getChildAt(i) as EditText
             if (editText.text.length == 1) {
-                showInputPad(editText)
-                editText.setSelection(1)
+//                showInputPad(editText)
+                editText.setText("")
+//                editText.setSelection(1)
                 return
             }
         }
@@ -137,16 +131,18 @@ class VerificationView @JvmOverloads constructor(
             }
         }
         if ((getChildAt(etTextCount - 1) as EditText).text.isNotEmpty()) {
+            val et = getChildAt(etTextCount - 1) as EditText
             val text = StringBuffer()
             for (i in 0 until etTextCount) {
                 text.append((getChildAt(i) as EditText).text.toString())
             }
             finish?.invoke(text.toString())
             (context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(
-                getChildAt(etTextCount - 1).windowToken,
+                et.windowToken,
                 0
             )
-            (getChildAt(etTextCount - 1) as EditText).isCursorVisible = false
+            et.isCursorVisible = false
+            et.clearFocus()
 
         }
     }
@@ -155,14 +151,8 @@ class VerificationView @JvmOverloads constructor(
      * 最后一个完成回调
      */
     var finish: ((String) -> Unit)? = null
-    private val paint = Paint()
-    private val textRect = Rect()
 
     init {
-        paint.isAntiAlias = true
-        paint.textSize = etTextSize
-        paint.getTextBounds("8", 0, 1, textRect)
-        setWillNotDraw(false)
         for (i in 0 until etTextCount) {
             val et = EditText(context)
             et.gravity = Gravity.CENTER
@@ -173,21 +163,24 @@ class VerificationView @JvmOverloads constructor(
             if (etBackGround != 0)
                 et.setBackgroundResource(etBackGround)
             et.setEms(1)
-            try {
-                val f = TextView::class.java.getDeclaredField("mCursorDrawableRes")
-                f.isAccessible = true
-                f.set(et, R.drawable.cursor_color)
-            } catch (e: Throwable) {
-            }
+            if (etCursorDrawable != 0)
+                try {
+                    val f = TextView::class.java.getDeclaredField("mCursorDrawableRes")
+                    f.isAccessible = true
+                    f.set(et, etCursorDrawable)
+                } catch (e: Throwable) {
+                }
             et.inputType = InputType.TYPE_CLASS_NUMBER
             et.setTextColor(etTextColor)
             et.setTextSize(TypedValue.COMPLEX_UNIT_PX, etTextSize)
             et.addTextChangedListener(this)
             et.setOnKeyListener(this)
+            et.tag = i
             et.filters = arrayOf<InputFilter>(InputFilter.LengthFilter(1))
             addView(et)
         }
         val view = View(context)
+//        view.setBackgroundColor(Color.RED)
         view.setOnClickListener {
             requestEditeFocus()
         }
