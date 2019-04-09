@@ -77,6 +77,7 @@ class VerificationView @JvmOverloads constructor(
     private var etBackGroundColor = Color.BLACK
     private var etTextColor = Color.BLACK
     private var etCursorDrawable = 0
+    private var etAutoShow = true
 
     init {
         val array = context.obtainStyledAttributes(attrs, R.styleable.VerificationView)
@@ -86,6 +87,7 @@ class VerificationView @JvmOverloads constructor(
         etBackGroundColor = array.getColor(R.styleable.VerificationView_vBackgroundColor, Color.BLACK)
         etTextColor = array.getColor(R.styleable.VerificationView_vTextColor, Color.BLACK)
         etCursorDrawable = array.getResourceId(R.styleable.VerificationView_vCursorDrawable, 0)
+        etAutoShow = array.getBoolean(R.styleable.VerificationView_vAutoShowInputBoard, true)
         array.recycle()
 
     }
@@ -114,9 +116,10 @@ class VerificationView @JvmOverloads constructor(
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        postDelayed({
-            focus()
-        }, 200)
+        if (etAutoShow)
+            postDelayed({
+                focus()
+            }, 200)
 
     }
 
@@ -124,17 +127,19 @@ class VerificationView @JvmOverloads constructor(
     private fun focus() {
         for (i in 0 until etTextCount) {
             val editText = getChildAt(i) as EditText
+            (getChildAt(i) as EditText).isEnabled = true
             if (editText.text.isEmpty()) {
                 showInputPad(editText)
                 editText.isCursorVisible = true
                 return
             }
         }
-        if ((getChildAt(etTextCount - 1) as EditText).text.isNotEmpty()) {
-            val et = getChildAt(etTextCount - 1) as EditText
+        val et = getChildAt(etTextCount - 1) as EditText
+        if (et.text.isNotEmpty()) {
             val text = StringBuffer()
             for (i in 0 until etTextCount) {
                 text.append((getChildAt(i) as EditText).text.toString())
+                (getChildAt(i) as EditText).isEnabled = false
             }
             finish?.invoke(text.toString())
             (context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(
@@ -180,7 +185,6 @@ class VerificationView @JvmOverloads constructor(
             addView(et)
         }
         val view = View(context)
-//        view.setBackgroundColor(Color.RED)
         view.setOnClickListener {
             requestEditeFocus()
         }
@@ -213,12 +217,10 @@ class VerificationView @JvmOverloads constructor(
         focus()
     }
 
-    /**
-     * 主动获取焦点 弹起键盘
-     */
     private fun requestEditeFocus() {
         val lastETC = getChildAt(etTextCount - 1) as EditText
         if (lastETC.text.isNotEmpty()) {
+            lastETC.isEnabled = true
             showInputPad(lastETC)
             lastETC.isCursorVisible = true
         } else

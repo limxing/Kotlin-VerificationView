@@ -7,5 +7,6 @@
         <attr name="vBackgroundResource" format="reference"/>
         <attr name="vCursorDrawable" format="reference"/>
         <attr name="vBackgroundColor" format="color"/>
+        <attr name="vAutoShowInputBoard" format="boolean"/>
     </declare-styleable>
 </resources>
