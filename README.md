@@ -77,4 +77,4 @@ verificationView.setFinish(new Function1<String, Unit>() {
 
 
 #### License
-LaplaceKLine is available under the MIT license.
+Kotlin-VerificationView is available under the MIT license.
