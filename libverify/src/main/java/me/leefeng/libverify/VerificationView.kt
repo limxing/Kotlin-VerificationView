@@ -2,7 +2,6 @@ package me.leefeng.libverify
 
 import android.content.Context
 import android.graphics.Color
-import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.text.Editable
 import android.text.InputFilter
@@ -63,6 +62,11 @@ class VerificationView @JvmOverloads constructor(
         val middle = (sizeW - sizeH * etTextCount) / (etTextCount - 1)
         for (i in 0 until etTextCount) {
             val et = getChildAt(i) as EditText
+            val lp = getChildAt(0).layoutParams
+            lp.width = sizeH
+            lp.height = sizeH
+            getChildAt(i).layoutParams = lp
+
             val left = (middle + sizeH) * i
             et.layout(left, 0, left + sizeH, sizeH)
         }
@@ -96,9 +100,7 @@ class VerificationView @JvmOverloads constructor(
         for (i in etTextCount - 1 downTo 0) {
             val editText = getChildAt(i) as EditText
             if (editText.text.length == 1) {
-//                showInputPad(editText)
                 editText.setText("")
-//                editText.setSelection(1)
                 return
             }
         }
@@ -198,12 +200,6 @@ class VerificationView @JvmOverloads constructor(
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         sizeW = View.MeasureSpec.getSize(widthMeasureSpec)
         sizeH = View.MeasureSpec.getSize(heightMeasureSpec)
-        for (i in 0 until etTextCount) {
-            val lp = getChildAt(0).layoutParams
-            lp.width = sizeH
-            lp.height = sizeH
-            getChildAt(i).layoutParams = lp
-        }
         measureChildren(widthMeasureSpec, heightMeasureSpec)
     }
 
