@@ -127,6 +127,13 @@ class VerificationView @JvmOverloads constructor(
 
 
     private fun focus() {
+
+        val text = StringBuffer()
+        for (i in 0 until etTextCount) {
+            text.append((getChildAt(i) as EditText).text.toString())
+        }
+        listener?.invoke(text.toString(),text.length == etTextCount)
+
         for (i in 0 until etTextCount) {
             val editText = getChildAt(i) as EditText
             (getChildAt(i) as EditText).isEnabled = true
@@ -138,12 +145,9 @@ class VerificationView @JvmOverloads constructor(
         }
         val et = getChildAt(etTextCount - 1) as EditText
         if (et.text.isNotEmpty()) {
-            val text = StringBuffer()
             for (i in 0 until etTextCount) {
-                text.append((getChildAt(i) as EditText).text.toString())
                 (getChildAt(i) as EditText).isEnabled = false
             }
-            finish?.invoke(text.toString())
             (context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(
                 et.windowToken,
                 0
@@ -157,7 +161,10 @@ class VerificationView @JvmOverloads constructor(
     /**
      * 最后一个完成回调
      */
+    @Deprecated("replace by listener")
     var finish: ((String) -> Unit)? = null
+
+    var listener:((String,Boolean)->Unit)? = null
 
     init {
         for (i in 0 until etTextCount) {

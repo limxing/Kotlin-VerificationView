@@ -13,8 +13,9 @@ class MainActivity : AppCompatActivity() {
         verificationView.finish = {
             Toast.makeText(this,"$it",Toast.LENGTH_SHORT).show()
         }
-        verificationView2.finish = {
-            Toast.makeText(this,"$it",Toast.LENGTH_SHORT).show()
+        verificationView2.listener = {s,b->
+            println("$s,$b")
+//            Toast.makeText(this,"$it",Toast.LENGTH_SHORT).show()
         }
         button.setOnClickListener {
             verificationView.clear()
