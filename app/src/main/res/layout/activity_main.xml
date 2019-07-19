@@ -75,6 +75,7 @@
         app:vBackgroundColor="#09000000"
         app:vTextSize="30dp"
         app:vLineHeight="1dp"
+        app:vWidthPercent="0.5"
         app:vLineColor="#22000000"
         app:layout_constraintTop_toBottomOf="@id/verificationView3"
         android:layout_height="60dp">

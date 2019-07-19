@@ -9,6 +9,7 @@
         <attr name="vBackgroundColor" format="color"/>
         <attr name="vAutoShowInputBoard" format="boolean"/>
         <attr name="vWidth" format="dimension"/>
+        <attr name="vWidthPercent" format="float"/>
         <attr name="vLineColor" format="color"/>
         <attr name="vLineHeight" format="dimension"/>
     </declare-styleable>

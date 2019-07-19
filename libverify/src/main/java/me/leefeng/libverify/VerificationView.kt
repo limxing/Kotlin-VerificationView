@@ -61,6 +61,7 @@ class VerificationView @JvmOverloads constructor(
 
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+        if (wtWidthPercent != 1f) etWidth = wtWidthPercent * sizeW / 4
         val w = if (etWidth != 0f) etWidth.toInt() else sizeH
         val middle = (sizeW - w * etTextCount) / (etTextCount - 1)
         for (i in 0 until etTextCount) {
@@ -92,6 +93,8 @@ class VerificationView @JvmOverloads constructor(
 
     private var etLineHeight: Float
 
+    private var wtWidthPercent: Float
+
     init {
         val array = context.obtainStyledAttributes(attrs, R.styleable.VerificationView)
         etTextSize = array.getDimension(R.styleable.VerificationView_vTextSize, 18 * density)
@@ -102,8 +105,9 @@ class VerificationView @JvmOverloads constructor(
         etCursorDrawable = array.getResourceId(R.styleable.VerificationView_vCursorDrawable, 0)
         etAutoShow = array.getBoolean(R.styleable.VerificationView_vAutoShowInputBoard, true)
         etWidth = array.getDimension(R.styleable.VerificationView_vWidth, 0f)
-        etLineColor = array.getColor(R.styleable.VerificationView_vLineColor,Color.BLACK)
-        etLineHeight = array.getDimension(R.styleable.VerificationView_vLineHeight,1f)
+        wtWidthPercent = array.getFloat(R.styleable.VerificationView_vWidthPercent, 1f)
+        etLineColor = array.getColor(R.styleable.VerificationView_vLineColor, Color.BLACK)
+        etLineHeight = array.getDimension(R.styleable.VerificationView_vLineHeight, 1f)
         array.recycle()
 
     }
@@ -148,7 +152,7 @@ class VerificationView @JvmOverloads constructor(
         val middle = (sizeW - w * etTextCount) / (etTextCount - 1)
         for (i in 0 until etTextCount) {
             val left = (middle + w) * i
-            canvas?.drawLine(left.toFloat(), sizeH - etLineHeight, (left + w).toFloat(), sizeH - etLineHeight,paint)
+            canvas?.drawLine(left.toFloat(), sizeH - etLineHeight, (left + w).toFloat(), sizeH - etLineHeight, paint)
         }
     }
 
