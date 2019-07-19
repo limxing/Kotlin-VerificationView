@@ -1,7 +1,9 @@
 package me.leefeng.libverify
 
 import android.content.Context
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Paint
 import android.graphics.drawable.ColorDrawable
 import android.text.Editable
 import android.text.InputFilter
@@ -59,16 +61,17 @@ class VerificationView @JvmOverloads constructor(
 
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
-        val middle = (sizeW - sizeH * etTextCount) / (etTextCount - 1)
+        val w = if (etWidth != 0f) etWidth.toInt() else sizeH
+        val middle = (sizeW - w * etTextCount) / (etTextCount - 1)
         for (i in 0 until etTextCount) {
             val et = getChildAt(i) as EditText
             val lp = getChildAt(0).layoutParams
-            lp.width = sizeH
+            lp.width = w
             lp.height = sizeH
             getChildAt(i).layoutParams = lp
 
-            val left = (middle + sizeH) * i
-            et.layout(left, 0, left + sizeH, sizeH)
+            val left = (middle + w) * i
+            et.layout(left, 0, left + w, sizeH)
         }
         getChildAt(etTextCount).layout(0, 0, sizeW, sizeH)
 
@@ -83,6 +86,12 @@ class VerificationView @JvmOverloads constructor(
     private var etCursorDrawable = 0
     private var etAutoShow = true
 
+    private var etWidth: Float
+
+    private var etLineColor: Int
+
+    private var etLineHeight: Float
+
     init {
         val array = context.obtainStyledAttributes(attrs, R.styleable.VerificationView)
         etTextSize = array.getDimension(R.styleable.VerificationView_vTextSize, 18 * density)
@@ -92,6 +101,9 @@ class VerificationView @JvmOverloads constructor(
         etTextColor = array.getColor(R.styleable.VerificationView_vTextColor, Color.BLACK)
         etCursorDrawable = array.getResourceId(R.styleable.VerificationView_vCursorDrawable, 0)
         etAutoShow = array.getBoolean(R.styleable.VerificationView_vAutoShowInputBoard, true)
+        etWidth = array.getDimension(R.styleable.VerificationView_vWidth, 0f)
+        etLineColor = array.getColor(R.styleable.VerificationView_vLineColor,Color.BLACK)
+        etLineHeight = array.getDimension(R.styleable.VerificationView_vLineHeight,1f)
         array.recycle()
 
     }
@@ -125,6 +137,21 @@ class VerificationView @JvmOverloads constructor(
 
     }
 
+    private val paint = Paint()
+    override fun onDraw(canvas: Canvas?) {
+        super.onDraw(canvas)
+        if (etWidth == 0f) return
+        paint.isAntiAlias = true
+        paint.color = etLineColor
+        paint.strokeWidth = etLineHeight
+        val w = if (etWidth != 0f) etWidth.toInt() else sizeH
+        val middle = (sizeW - w * etTextCount) / (etTextCount - 1)
+        for (i in 0 until etTextCount) {
+            val left = (middle + w) * i
+            canvas?.drawLine(left.toFloat(), sizeH - etLineHeight, (left + w).toFloat(), sizeH - etLineHeight,paint)
+        }
+    }
+
 
     private fun focus() {
 
@@ -132,7 +159,7 @@ class VerificationView @JvmOverloads constructor(
         for (i in 0 until etTextCount) {
             text.append((getChildAt(i) as EditText).text.toString())
         }
-        listener?.invoke(text.toString(),text.length == etTextCount)
+        listener?.invoke(text.toString(), text.length == etTextCount)
 
         for (i in 0 until etTextCount) {
             val editText = getChildAt(i) as EditText
@@ -164,9 +191,10 @@ class VerificationView @JvmOverloads constructor(
     @Deprecated("replace by listener")
     var finish: ((String) -> Unit)? = null
 
-    var listener:((String,Boolean)->Unit)? = null
+    var listener: ((String, Boolean) -> Unit)? = null
 
     init {
+        setWillNotDraw(false)
         for (i in 0 until etTextCount) {
             val et = EditText(context)
             et.gravity = Gravity.CENTER

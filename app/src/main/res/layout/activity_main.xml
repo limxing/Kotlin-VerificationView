@@ -66,4 +66,19 @@
         android:id="@+id/verificationView3"
         android:layout_marginEnd="8dp"/>
 
+
+    <me.leefeng.libverify.VerificationView
+        android:layout_width="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:vWidth="80dp"
+        app:vBackgroundColor="#09000000"
+        app:vTextSize="30dp"
+        app:vLineHeight="1dp"
+        app:vLineColor="#22000000"
+        app:layout_constraintTop_toBottomOf="@id/verificationView3"
+        android:layout_height="60dp">
+
+    </me.leefeng.libverify.VerificationView>
+
 </android.support.constraint.ConstraintLayout>
