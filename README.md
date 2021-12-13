@@ -22,7 +22,7 @@ allprojects {
 App level build.gradle
 ```
 dependencies {
-    implementation 'com.github.limxing:Kotlin-VerificationView:1.0'
+    implementation 'com.github.limxing:Kotlin-VerificationView:1.4'
 }
 ```
 
@@ -73,7 +73,8 @@ verificationView.setFinish(new Function1<String, Unit>() {
     }
 });
 ```
-
+### History
+2021-12-13  Support Set EditText's ImeOptions Property . 
 
 
 #### License

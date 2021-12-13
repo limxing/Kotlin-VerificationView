@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -76,10 +76,11 @@
         app:vTextSize="30dp"
         app:vLineHeight="1dp"
         app:vWidthPercent="0.5"
+        app:vImeOptions="flagNoExtractUi"
         app:vLineColor="#22000000"
         app:layout_constraintTop_toBottomOf="@id/verificationView3"
         android:layout_height="60dp">
 
     </me.leefeng.libverify.VerificationView>
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

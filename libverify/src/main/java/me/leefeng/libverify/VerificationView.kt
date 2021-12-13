@@ -15,6 +15,7 @@ import android.view.Gravity
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
@@ -50,6 +51,7 @@ class VerificationView @JvmOverloads constructor(
 
     }
 
+    private var imeOptions: Int
     private var lastEtisEmpty = true
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
         val lastETC = getChildAt(etTextCount - 1) as EditText
@@ -100,7 +102,8 @@ class VerificationView @JvmOverloads constructor(
         etTextSize = array.getDimension(R.styleable.VerificationView_vTextSize, 18 * density)
         etTextCount = array.getInteger(R.styleable.VerificationView_vTextCount, 4)
         etBackGround = array.getResourceId(R.styleable.VerificationView_vBackgroundResource, 0)
-        etBackGroundColor = array.getColor(R.styleable.VerificationView_vBackgroundColor, Color.BLACK)
+        etBackGroundColor =
+            array.getColor(R.styleable.VerificationView_vBackgroundColor, Color.BLACK)
         etTextColor = array.getColor(R.styleable.VerificationView_vTextColor, Color.BLACK)
         etCursorDrawable = array.getResourceId(R.styleable.VerificationView_vCursorDrawable, 0)
         etAutoShow = array.getBoolean(R.styleable.VerificationView_vAutoShowInputBoard, true)
@@ -108,6 +111,7 @@ class VerificationView @JvmOverloads constructor(
         wtWidthPercent = array.getFloat(R.styleable.VerificationView_vWidthPercent, 1f)
         etLineColor = array.getColor(R.styleable.VerificationView_vLineColor, Color.BLACK)
         etLineHeight = array.getDimension(R.styleable.VerificationView_vLineHeight, 1f)
+        imeOptions = array.getInt(R.styleable.VerificationView_vImeOptions, EditorInfo.IME_NULL)
         array.recycle()
 
     }
@@ -129,7 +133,10 @@ class VerificationView @JvmOverloads constructor(
         editText.isFocusable = true
         editText.isFocusableInTouchMode = true
         editText.requestFocus()
-        (context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).showSoftInput(editText, 0)
+        (context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).showSoftInput(
+            editText,
+            0
+        )
     }
 
     override fun onAttachedToWindow() {
@@ -152,7 +159,13 @@ class VerificationView @JvmOverloads constructor(
         val middle = (sizeW - w * etTextCount) / (etTextCount - 1)
         for (i in 0 until etTextCount) {
             val left = (middle + w) * i
-            canvas?.drawLine(left.toFloat(), sizeH - etLineHeight, (left + w).toFloat(), sizeH - etLineHeight, paint)
+            canvas?.drawLine(
+                left.toFloat(),
+                sizeH - etLineHeight,
+                (left + w).toFloat(),
+                sizeH - etLineHeight,
+                paint
+            )
         }
     }
 
@@ -223,6 +236,8 @@ class VerificationView @JvmOverloads constructor(
             et.setOnKeyListener(this)
             et.tag = i
             et.filters = arrayOf<InputFilter>(InputFilter.LengthFilter(1))
+            if (imeOptions != EditorInfo.IME_NULL)
+                et.imeOptions = imeOptions
             addView(et)
         }
         val view = View(context)
